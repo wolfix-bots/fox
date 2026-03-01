@@ -39,6 +39,20 @@ export function ChatContainer() {
     scrollToBottom();
   }, [messages, isLoading, scrollToBottom]);
 
+  // Typing simulation: gradually reveal message content
+  async function typeMessage(msgId: string, fullText: string, typingSpeed: number = 16) {
+    for (let i = 0; i < fullText.length; i++) {
+      await new Promise(r => setTimeout(r, typingSpeed));
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === msgId
+            ? { ...msg, content: fullText.slice(0, i + 1) }
+            : msg
+        )
+      );
+    }
+  }
+
   async function sendMessage(text: string) {
     const userMsg: Message = {
       id: generateId(),
@@ -71,13 +85,16 @@ export function ChatContainer() {
         reply = await res.text();
       }
 
+      const replyText = reply || "Hmm, I got lost chasing my tail. Try again!";
       const assistantMsg: Message = {
         id: generateId(),
         role: "assistant",
-        content: reply || "Hmm, I got lost chasing my tail. Try again!",
+        content: "", // Start empty, will be filled by typeMessage
       };
 
       setMessages((prev) => [...prev, assistantMsg]);
+      // Type out the response
+      await typeMessage(assistantMsg.id, replyText);
     } catch {
       setMessages((prev) => [
         ...prev,
