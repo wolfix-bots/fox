@@ -12,6 +12,11 @@ interface Message {
   content: string;
 }
 
+// Simple ID generator to avoid crypto.randomUUID issues
+function generateId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
 const WELCOME_SUGGESTIONS = [
   "Tell me a fun fox fact!",
   "What can you help me with?",
@@ -36,7 +41,7 @@ export function ChatContainer() {
 
   async function sendMessage(text: string) {
     const userMsg: Message = {
-      id: crypto.randomUUID(),
+      id: generateId(),
       role: "user",
       content: text,
     };
@@ -45,11 +50,11 @@ export function ChatContainer() {
     setIsLoading(true);
 
     try {
-      const encodedMessage = encodeURIComponent(text);
-      const res = await fetch(
-        `https://apis.xcasper.space/api/ai/mistral?message=${encodedMessage}`,
-        { method: "GET" }
-      );
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text }),
+      });
 
       if (!res.ok) {
         throw new Error(`API responded with status ${res.status}`);
@@ -67,7 +72,7 @@ export function ChatContainer() {
       }
 
       const assistantMsg: Message = {
-        id: crypto.randomUUID(),
+        id: generateId(),
         role: "assistant",
         content: reply || "Hmm, I got lost chasing my tail. Try again!",
       };
@@ -77,7 +82,7 @@ export function ChatContainer() {
       setMessages((prev) => [
         ...prev,
         {
-          id: crypto.randomUUID(),
+          id: generateId(),
           role: "assistant",
           content: "Oops! Foxy tripped over a log. Please try again.",
         },
