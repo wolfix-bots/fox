@@ -92,10 +92,35 @@
     sendBtn.disabled = on;
     input.disabled = on;
     if(on){
-      addMessage('Foxy is thinking...', 'assistant loading');
+      // Add (or reuse) a loading placeholder — keep it so we can replace it with typing
+      const existing = messages.querySelector('.loading');
+      if(!existing) addMessage('Foxy is thinking...', 'assistant loading');
+    }
+    // when turning off loading we don't remove the element here — typing will replace it
+  }
+
+  // Typing simulation for assistant replies
+  function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
+
+  async function typeAssistant(text){
+    // Find the loading element (if any) to reuse, otherwise create a new assistant bubble
+    let el = messages.querySelector('.loading');
+    if(el){
+      el.className = 'msg assistant';
+      el.textContent = '';
     } else {
-      const l = messages.querySelector('.loading');
-      if(l) l.remove();
+      el = document.createElement('div');
+      el.className = 'msg assistant';
+      messages.appendChild(el);
+    }
+
+    // Type one character at a time
+    const speed = 16; // ms per character
+    for(let i = 0; i < text.length; i++){
+      el.textContent += text[i];
+      messages.scrollTop = messages.scrollHeight;
+      // small pause, allow user to interrupt by clearing messages
+      await sleep(speed);
     }
   }
 
@@ -126,7 +151,7 @@
     
     try{
       const reply = await fetchReply(text);
-      addMessage(reply || 'Hmm, I got lost chasing my tail.', 'assistant');
+      await typeAssistant(reply || 'Hmm, I got lost chasing my tail.');
     }catch(err){
       addMessage('Oops! Foxy tripped over a log. ' + (err.message||''), 'error');
     }finally{
