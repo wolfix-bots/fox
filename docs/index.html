@@ -3,24 +3,29 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Foxy — Static Chat</title>
+  <title>Foxy — AI Chat</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <main class="app">
     <header class="header">
-      <h1>Foxy</h1>
-      <p class="sub">Ask Foxy anything — powered by an external AI API</p>
+      <div class="header-inner">
+        <div class="fox-icon">🦊</div>
+        <div class="header-text">
+          <h1>Foxy AI</h1>
+          <p class="sub">Your clever AI companion</p>
+        </div>
+      </div>
     </header>
 
     <section id="messages" class="messages" aria-live="polite"></section>
 
     <form id="chatForm" class="inputBar">
       <textarea id="messageInput" placeholder="Ask Foxy anything..." rows="1" aria-label="Message"></textarea>
-      <button id="sendBtn" type="submit">Send</button>
+      <button id="sendBtn" type="submit" class="send-btn">✈️</button>
     </form>
-    <p class="note" style="text-align: center; font-size: 11px; color: var(--text-muted); margin-top: 6px; padding: 0 20px;">
-      💾 <strong>Note:</strong> This static version won't remember chats between sessions. For full features, deploy the main app to Vercel or similar.
+    <p class="note">
+      💾 This version won't remember between sessions. <a href="https://github.com/wolfix-bots/fox" target="_blank" class="link">Deploy the full app</a> for all features.
     </p>
   </main>
 
